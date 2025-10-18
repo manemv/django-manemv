@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Page, ContentPage, Course, Module, Topic, ContentItem
+import nested_admin
 
 # This allows us to edit ContentPage items directly within the Page admin
 class ContentPageInline(admin.TabularInline):
@@ -24,28 +25,28 @@ admin.site.register(ContentPage)
 
 # --- Course Admin Configuration ---
 
-class ContentItemInline(admin.StackedInline):
+class ContentItemInline(nested_admin.NestedTabularInline):
     model = ContentItem
     extra = 1
 
-class TopicInline(admin.StackedInline):
+class TopicInline(nested_admin.NestedStackedInline):
     model = Topic
     extra = 1
     inlines = [ContentItemInline]
 
-class ModuleInline(admin.StackedInline):
+class ModuleInline(nested_admin.NestedStackedInline):
     model = Module
     extra = 1
     inlines = [TopicInline]
 
 @admin.register(Course)
-class CourseAdmin(admin.ModelAdmin):
+class CourseAdmin(nested_admin.NestedModelAdmin):
     list_display = ('title', 'slug', 'created_at')
     search_fields = ('title', 'description')
     prepopulated_fields = {'slug': ('title',)}
     inlines = [ModuleInline]
 
 # Registering other models to be visible, though they are best managed via inlines
-admin.site.register(Module)
-admin.site.register(Topic)
-admin.site.register(ContentItem)
+admin.site.register(Module, nested_admin.NestedModelAdmin)
+admin.site.register(Topic, nested_admin.NestedModelAdmin)
+admin.site.register(ContentItem, nested_admin.NestedModelAdmin)
