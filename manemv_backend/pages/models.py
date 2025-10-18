@@ -81,3 +81,10 @@ class ContentItem(models.Model):
 
     class Meta:
         ordering = ['order']
+        verbose_name_plural = "Content Items"
+
+    def __str__(self):
+        # Provide a helpful representation for the admin.
+        if self.topic:
+            return f"Content for '{self.topic.title}' (Order: {self.order})"
+        return f"Content Item (Unassigned, Order: {self.order})"
